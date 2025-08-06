@@ -15,7 +15,7 @@ The project will focus on designing, implementing, and documenting an AI/ML algo
 ## Key Tools and Libraries
 
 - **Programming Languages:** Python, TypeScript  
-- **ML Frameworks:** TensorFlow, PyTorch, scikit-learn  
+- **ML Frameworks:**  PyTorch, scikit-learn  
 - **Data Processing:** Pandas, NumPy  
 - **Web Frameworks (optional):** Angular, FastAPI, Flask  
 - **Testing:** Pytest, Vitest, Cypress  
