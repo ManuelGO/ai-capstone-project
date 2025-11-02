@@ -61,7 +61,6 @@ Output:      0.6397916079538416
 ## 5) Repository Structure
 
 The repository is organised to keep data, notebooks, and results clearly separated for transparency and reproducibility:
-
 ```
 📁 capstone-bbo/
 ┣ 📂 initial_data/              # Provided base datasets (F1–F8: initial_inputs.npy, initial_outputs.npy)
@@ -76,7 +75,6 @@ The repository is organised to keep data, notebooks, and results clearly separat
 ┣ 📜 README.md                  # Main project documentation (this file)
 ┗ 📜 requirements.txt           # Dependencies for reproducibility
 ```
-
 ---
 
 ## 6) Reproducible Workflow (per week)
