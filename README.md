@@ -1,59 +1,70 @@
 # 🧠 Black-Box Optimization (BBO) — Capstone Project
 
-## 1) Project Overview
-The **BBO Capstone** is an iterative ML challenge to optimize **eight unknown (“black-box”) functions** with **one query per function per week**. You never see the equations—only inputs → output pairs.  
-This mimics real-world tasks like **hyperparameter tuning**, **chemical yield optimization**, or **control**, where evaluations are expensive and uncertainty matters.
+## 1️⃣ Project Overview
+The **BBO Capstone** is an iterative ML challenge to optimize **eight unknown ("black-box") functions** with **one query per function per week**.  
+You never see the equations—only inputs → output pairs.  
 
-**Why it’s relevant:** it trains a repeatable workflow—plan, model, query, reflect—that generalizes to data-science problems with **limited information**.
+This mimics real-world tasks like **hyperparameter tuning**, **chemical yield optimization**, or **experimental control**, where evaluations are expensive and uncertainty matters.
 
-**Career value:** shows proficiency in **Bayesian optimization**, **experimental design**, **documentation**, and **reproducibility**.
+**Relevance:** it trains a repeatable workflow — *plan → model → query → reflect* — that generalizes to data-science problems with **limited information**.
+
+**Career value:** demonstrates mastery of **Bayesian Optimization**, **experimental design**, **documentation**, and **reproducibility**.
 
 ---
 
 ## 2) Inputs and Outputs
-- **Inputs:** vectors **x ∈ [0,1]^d** (d varies by function).  
-  - F1–F2: 2D, F3: 3D, F4–F5: 4D, F6: 5D, F7: 6D, F8: 8D.
-  - **Submission format:** `x1 - x2 - … - xd` with six decimals (e.g., `0.123456 - 0.654321`).
-- **Output:** a single scalar **y** (the performance signal).
-- **Objective:** **maximize** y for all eight functions.
-
-**Example**
+- **Inputs:** vectors **x ∈ [0,1]^d** (d varies per function).  
+  - F1-F2: 2D, F3: 3D, F4-F5: 4D, F6: 5D, F7: 6D, F8: 8D.  
+  - **Submission format:** `x1 - x2 - … - xd` (six decimals).  
+- **Output:** a scalar **y**, to be **maximized**.  
+- **Example:**
 Input (F2):  0.684763 - 0.992806  
 Output:      0.6397916079538416
+
 ---
 
 ## 3) Challenge Objectives & Constraints
-- **Goal:** find high-performing inputs with **few evaluations**.
-- **Constraints:**  
-  - 1 query/function/week; outputs returned later.  
-  - Black-box (no gradients or closed form).  
-  - Surfaces can be noisy, non-linear, multi-modal.  
-- **Success criteria:** not only higher y, but **clear, data-driven reasoning** and iterative refinement.
+- **Goal:** maximize y with *few evaluations*.  
+- **Constraints:**
+- 1 query/function/week.
+- Black-box, no gradients or analytic form.
+- Noisy, non-linear, possibly multi-modal landscapes.
+- **Success =** improved y **and** clear, data-driven reasoning and iterative refinement.
 
 ---
 
-## 4) Technical Approach (living section)
-### Surrogate modelling
-- **Primary:** **Gaussian Process (GP)** with **Matern(ν=2.5)** + **ConstantKernel** (amplitude) + **WhiteKernel** (noise).  
-- **Preprocessing:** **StandardScaler** on X; log-transform on y when scale is extreme (e.g., F5).  
-- **Uncertainty:** use GP predictive mean (μ) and std (σ) to guide acquisition.
+## 4) Technical Approach
+### Surrogate Modelling
+- **Model:** Gaussian Process (GP)  
+- **Kernel:** Matern (ν=2.5) × Constant + WhiteKernel (noise).  
+- **Scaling:** StandardScaler on X; log1p(y) for large-scale responses (e.g., F5).  
+- **Uncertainty:** use GP predictive mean (μ) and std (σ) to guide next queries.  
 
-### Acquisition & candidate generation
-- **Expected Improvement (EI)** as default; **UCB** and **MaxVar** as fallbacks if EI is flat.  
-- **Trust Regions (TR):** center on the **best observed point**; typical mix **70–80% TR / 20–30% global**.  
-- **Sampling:** **Latin Hypercube Sampling (LHS)** to generate diverse candidates; anti-edge and anti-duplicate filters.
+### Acquisition & Candidate Generation
+- **Expected Improvement (EI)** as primary,  
+**UCB** and **MaxVar** as fallbacks if EI plateaus.  
+- **Trust Region (TR):** centered on current best point.  
+Typical mix → 70-80 % TR / 20-30 % global.  
+- **Sampling:** Latin Hypercube (LHS); anti-edge & anti-duplicate filtering.
 
 ### Exploration ↔ Exploitation
-- Early rounds: higher **ξ** (e.g., 0.05–0.10) + wider TR for **exploration**.  
-- Current rounds: lower **ξ** (≈ 0.02) for **refinement**, still keeping 20–40% global sampling in higher-D (F7–F8).
+- **Early rounds:** higher ξ (0.05-0.10), wider TR → exploration.  
+- **Current rounds:** ξ≈0.02, narrower TR → local refinement.  
+- **Higher-D (F7-F8):** maintain 30-40 % global candidates.
 
-### Function-specific notes (Week 3 snapshot)
-- **Improved:** **F2, F3, F4, F7, F8** → stable upward trend; refinement with small ξ and TR.  
-- **Challenging:** **F5, F6** → noisier/irregular; keep some global sampling, TR broader; log1p(y) in F5.  
-- **F1:** re-balanced toward exploration after weak outcomes; larger ξ and relaxed TR.
+### Function-specific remarks
+| Function | Status / Strategy |
+|-----------|------------------|
+| F1 | Early convergence; widened TR for renewed exploration. |
+| F2-F4 | Stable upward trend, refinement phase (low ξ). |
+| F5 | Unimodal, high variance → `log1p(y)` stabilisation, small ξ=0.01. |
+| F6 | Moderate noise → broader TR + ξ≈0.03. |
+| F7 | Multimodal; increased exploration (ξ≈0.05, κ≈1.8). |
+| F8 | 8D surface; balance 70 % TR / 30 % global, anti-edge filter active. |
+
 
 ### Optional classification view (SVMs)
-- With more data, a **soft-margin / kernel SVM** could separate “high vs low y” regions for interpretability.  
+- With more data, a **soft-margin / kernel SVM** could separate "high vs low y" regions for interpretability.  
   Useful as a complementary diagnostic; GPs remain primary for uncertainty-aware search.
 
 ---
@@ -63,43 +74,122 @@ Output:      0.6397916079538416
 The repository is organised to keep data, notebooks, and results clearly separated for transparency and reproducibility:
 ```
 📁 capstone-bbo/
-┣ 📂 initial_data/              # Provided base datasets (F1–F8: initial_inputs.npy, initial_outputs.npy)
-┣ 📂 notebooks/                 # One Jupyter notebook per function
-│   ┣ function_1.ipynb
-│   ┣ function_2.ipynb
-│   ┣ …
-│   ┗ function_8.ipynb
-┣ 📂 suggestions/               # CSV files with suggested query points per week
-┣ 📂 figures/                   # Optional: generated visualizations (e.g. EI maps, projections)
-┣ 📜 reflections.md             # Weekly reflections and learning notes
-┣ 📜 README.md                  # Main project documentation (this file)
-┗ 📜 requirements.txt           # Dependencies for reproducibility
+├── README.md
+├── requirements.txt
+│
+├── initial_data/
+│   ├── function_1/initial_inputs.npy
+│   ├── function_1/initial_outputs.npy
+│   └── … (function_2-function_8)
+│
+├── exploration_notebooks/
+│   ├── f01_exploration.ipynb
+│   ├── f02_exploration.ipynb
+│   └── … (f03-f08)
+│
+├── configs/                  # Per-function configuration (YAML)
+│   ├── f01.yaml
+│   ├── f02.yaml
+│   ├── f03.yaml
+│   └── … (f08.yaml)
+│
+├── src/                      # Planned modular codebase (in progress)
+│   ├── init.py
+│   ├── data.py               # Load inputs/outputs, append weeks
+│   ├── gp.py                 # GP building & fitting utilities
+│   ├── candidates.py         # LHS sampling & filtering
+│   ├── acquisition.py        # EI, UCB, MaxVar functions
+│   ├── trust_region.py       # Trust-region helpers
+│   └── run_suggest.py        # CLI to run suggestions (under development)
+│
+├── suggestions/              # Saved candidate CSVs (by week)
+└── figures/                  # Optional visualisations / plots
 ```
 ---
 
-## 6) Reproducible Workflow (per week)
-1. **Load** initial + weekly (x,y). Guardar `X_prev, y_prev`.  
-2. **Fit** GP (scaled X; adjust noise/length scales).  
-3. **Generate** candidates (LHS: TR + global).  
-4. **Score** with EI (ξ adaptive). Fallback: UCB → MaxVar.  
-5. **Filter** (anti-edge, anti-duplicate) and **select** top-1 for submission.  
-6. **Log** rationale, plots y μ/σ maps or pair projections. Commit notebooks + CSV.
+## 6) Modularisation Plan (work in progress)
+We are progressively migrating recurring logic from the notebooks to reusable modules under `src/`.  
+This transition will allow:
+- Unified GP + acquisition handling across functions.
+- Parameter tuning via `configs/*.yaml` instead of hard-coded notebook values.
+- Consistent saving/logging behaviour (e.g., `suggestions/F5_w05.csv`).
+- Easier experimentation (different kernels/acquisitions with a single config edit).
+
+**Implementation strategy:**
+- Maintain notebooks as the *authoritative reference* while testing module parity.
+- Validate results function-by-function before fully automating.
+- Ensure identical behaviour (same EI ranking, same candidates) before migration.
 
 ---
 
-## 7) Current Progress (Week 3 — brief)
-- **Submissions:**  
-  - F2: `0.966811 - 0.862665`  
-  - F3: `0.250686 - 0.415794 - 0.535793`  
-  - F4: `0.399923 - 0.481496 - 0.417614 - 0.455103`  
-  - F5: `0.487939 - 0.756981 - 0.713439 - 0.929657`  
-  - F6: `0.519632 - 0.356784 - 0.660361 - 0.981270 - 0.172574`  
-  - F7: `0.087739 - 0.209465 - 0.209361 - 0.156530 - 0.372774 - 0.896630`  
-  - F8: `0.105756 - 0.116724 - 0.211116 - 0.162702 - 0.690885 - 0.574863 - 0.206488 - 0.351411`  
-  - F1: `0.765363 - 0.899441`
-- **Trend:** Up in **F2, F3, F4, F7, F8**; mixed in **F5, F6**; F1 under review (more exploration).
+## 7) Reproducible Workflow (per function/week)
+1. **Load data:** initial + weekly updates.  
+2. **Fit GP:** scale X, set noise/length-scales.  
+3. **Generate candidates:** LHS with TR + global sampling.  
+4. **Score:** EI (ξ adaptive); fallback UCB → MaxVar.  
+5. **Filter:** edge and duplicate removal.  
+6. **Select:** best candidate → format → save as submission CSV.  
+7. **Reflect:** summarise reasoning, trends, and next-week strategy.
 
 ---
+
+## 8) Upcoming Additions
+✅ `configs/` with YAML per function (parameterized strategy)  
+✅ `requirements.txt` for reproducibility  
+🔄 `src/` modular code scaffolding (to be filled progressively)  
+🔜 `Makefile` or CLI wrapper for one-command weekly suggestions  
+🔜 CI tests (Pytest or simple asserts) to validate numerical consistency  
+
+## 9) Example Usage (future state)
+```bash
+# Once src/ modules are complete
+python -m src.run_suggest --config configs/f05.yaml --week 5
+```
+**This command will automatically:**
+-	Load data and configuration.
+-	Fit the GP and evaluate EI/UCB.
+-	Select the next query and write `suggestions/F5_w05.csv`.
+---
+## 10) Quick Setup Commands
+To create the modular structure and placeholders:
+```bash
+# From project root
+mkdir -p configs src suggestions figures
+
+# Create empty placeholder files
+touch src/__init__.py
+
+# Example base configs
+echo "# YAML config templates per function" > configs/README.txt
+echo "# To be filled with per-function settings (xi, kappa, L, etc.)" >> configs/README.txt
+
+# Requirements
+cat > requirements.txt <<'EOF'
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.3
+pandas>=2.0
+matplotlib>=3.7
+seaborn>=0.12
+plotly>=5.15
+pyyaml>=6.0
+EOF
+
+# Optional commit
+git add .
+git commit -m "Add modular structure (configs/, src/, suggestions/, figures/)"
+```
+---
+
+## 11) Dependencies
+**Main Python libraries (see `requirements.txt`):**
+- `numpy`, `scipy`, `scikit-learn`
+- `pandas`, `matplotlib`, `seaborn`, `plotly`
+- `pyyaml` — for configuration management
+
+## 12) Author:
+
 
 *Author: Manuel Gonzalez Arvelo*  
-*Programme: BBO Capstone — Stage 2 (Weeks 1–3). This README will evolve as the project progresses.*
+*Imperial College London, Business School - Black-Box Optimization Capstone*
+*Programme: BBO Capstone — Stage 2 (Weeks 1-5). This README will evolve as the project progresses.*
