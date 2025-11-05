@@ -153,31 +153,16 @@ python -m src.run_suggest --config configs/f05.yaml --week 5
 ## 10) Quick Setup Commands
 To create the modular structure and placeholders:
 ```bash
-# From project root
-mkdir -p configs src suggestions figures
+# 1. Clone repository
+git clone https://github.com/<your-username>/bbo-capstone.git
+cd bbo-capstone
 
-# Create empty placeholder files
-touch src/__init__.py
+# 2. Create and activate environment (recommended)
+python -m venv .venv
+source .venv/bin/activate  # (or .venv\Scripts\activate on Windows)
 
-# Example base configs
-echo "# YAML config templates per function" > configs/README.txt
-echo "# To be filled with per-function settings (xi, kappa, L, etc.)" >> configs/README.txt
-
-# Requirements
-cat > requirements.txt <<'EOF'
-numpy>=1.24
-scipy>=1.10
-scikit-learn>=1.3
-pandas>=2.0
-matplotlib>=3.7
-seaborn>=0.12
-plotly>=5.15
-pyyaml>=6.0
-EOF
-
-# Optional commit
-git add .
-git commit -m "Add modular structure (configs/, src/, suggestions/, figures/)"
+# 3. Install dependencies
+pip install -r requirements.txt
 ```
 ---
 
