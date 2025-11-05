@@ -154,7 +154,7 @@ python -m src.run_suggest --config configs/f05.yaml --week 5
 To create the modular structure and placeholders:
 ```bash
 # 1. Clone repository
-git clone https://github.com/<your-username>/bbo-capstone.git
+git clone https://github.com/ManuelGO/ai-capstone-project.git
 cd bbo-capstone
 
 # 2. Create and activate environment (recommended)
