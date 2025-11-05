@@ -171,8 +171,16 @@ pip install -r requirements.txt
 - `numpy`, `scipy`, `scikit-learn`
 - `pandas`, `matplotlib`, `seaborn`, `plotly`
 - `pyyaml` — for configuration management
+---
 
-## 12) Author:
+
+## 🧩 Next Steps
+- Integrate function-specific utilities into `/src` (data loading, GP fitting, EI computation).
+- Add docstrings and typing for modular scripts.
+- Include weekly reflection summaries under `/docs` (optional).
+---
+
+## Author:
 
 
 *Author: Manuel Gonzalez Arvelo*  
