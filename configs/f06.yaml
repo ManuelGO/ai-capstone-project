@@ -1,0 +1,32 @@
+
+function_id: F6
+dims: 5
+transform:
+  type: none   # ya maximizamos (menos negativo = mejor)
+model:
+  kernel: matern
+  nu: 2.5
+  length_scale_init: 0.6
+  length_scale_bounds: [0.01, 3.0]
+  noise_level: 0.005
+  noise_bounds: [1e-5, 1e-1]
+acquisition:
+  type: EI
+  xi: 0.03
+  kappa: 1.8
+trust_region:
+  L: 0.35
+  anchor: best
+candidates:
+  tr_ratio: 0.6
+  global_ratio: 0.4
+  n_tr: 42000
+  n_gl: 28000
+  edge_eps: 0.001
+  linf_tol: 0.03
+bounds:
+  pad: 0.10
+  clip01: true
+seeds:
+  lhs_tr: 6061
+  lhs_gl: 6062

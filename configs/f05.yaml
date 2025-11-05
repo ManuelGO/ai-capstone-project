@@ -1,0 +1,32 @@
+
+function_id: F5
+dims: 4
+transform:
+  type: log1p   # none | log1p | negate
+model:
+  kernel: matern
+  nu: 2.5
+  length_scale_init: 0.35
+  length_scale_bounds: [0.001, 3.0]
+  noise_level: 1e-5
+  noise_bounds: [1e-7, 1e-3]
+acquisition:
+  type: EI      # EI | UCB | MaxVar
+  xi: 0.01
+  kappa: 1.4
+trust_region:
+  L: 0.28
+  anchor: best  # best | w1 | w2 | w3...
+candidates:
+  tr_ratio: 0.7
+  global_ratio: 0.3
+  n_tr: 70000
+  n_gl: 30000
+  edge_eps: 0.001
+  linf_tol: 0.02
+bounds:
+  pad: 0.10
+  clip01: true
+seeds:
+  lhs_tr: 5051
+  lhs_gl: 5052
