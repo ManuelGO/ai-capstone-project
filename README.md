@@ -1,5 +1,14 @@
 # 🧠 Black-Box Optimization (BBO) — Capstone Project
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [**DATASHEET.md**](./DATASHEET.md) | Dataset documentation: motivation, composition, collection process, preprocessing, uses |
+| [**MODEL_CARD.md**](./MODEL_CARD.md) | Optimization approach: strategy evolution, performance, assumptions, ethical considerations |
+
+---
+
 ## 1) Project Overview
 The **BBO Capstone** is an iterative ML challenge to optimize **eight unknown ("black-box") functions** with **one query per function per week**.  
 You never see the equations—only inputs → output pairs.  
